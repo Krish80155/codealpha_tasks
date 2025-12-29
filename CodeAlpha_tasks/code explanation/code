@@ -1,0 +1,59 @@
+#include <LiquidCrystal.h>
+
+// LCD pins: RS, EN, D4, D5, D6, D7
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+const int trigPin = 9;
+const int echoPin = 10;
+
+long duration;
+int distance;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  lcd.begin(16, 2);
+  lcd.print("Ultrasonic");
+  lcd.setCursor(0, 1);
+  lcd.print("Distance Meter");
+
+  Serial.begin(9600);
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  // Trigger ultrasonic pulse
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Read echo time
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate distance in cm
+  distance = duration * 0.034 / 2;
+
+  // Display on Serial Monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Display on LCD
+  lcd.setCursor(0, 0);
+  lcd.print("Distance: ");
+  lcd.print(distance);
+  lcd.print(" cm   ");
+
+  lcd.setCursor(0, 1);
+  if (distance > 0) {
+    lcd.print("Measuring...    ");
+  } else {
+    lcd.print("Out of Range    ");
+  }
+
+  delay(500);
+}
